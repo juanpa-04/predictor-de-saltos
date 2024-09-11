@@ -4,18 +4,26 @@ from trace import Trace
 # Crea el pc apartir de un archivo trace
 # El pc salta aleatoriamente
 class ProgramCounter:
-    def __init__(self,trace_name):
+    def __init__(self,trace_name, initial_pc = 0):
         self.__trace = Trace(trace_name)
-        self.__current_pc = self.__trace[0]
-    
-    @property
-    def address(self):
-        return self.__current_pc[0]
-    
-    @property
-    def history(self):
-        return self.__current_pc[1]
-    
+        self.__current_pc = self.__trace[initial_pc]
+        self.__pc_index = self.__trace.index(self.__current_pc)
+        self.__jmp = self.jmp
+
+    def __str__(self):
+        return f"{self.__current_pc[0]}"
+
     def next(self):
-        self.__current_pc = next(self.__trace)
+        if self.jmp:
+            self.__current_pc = next(self.__trace)
+        else:
+            self.__current_pc = self.__trace[self.__pc_index + 1]
+        self.__update_pc_index()
         return self.__current_pc
+    
+    @property
+    def jmp(self):
+        return  True if int(self.__current_pc[1]) else False
+    
+    def __update_pc_index(self):
+        self.__pc_index = self.__trace.index(self.__current_pc)

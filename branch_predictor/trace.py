@@ -27,5 +27,8 @@ class Trace:
                 address, history = line.strip().split()
                 self.__traces.append((address, history))
         self.__trace_len = len(self.__traces)
+    
+    def index(self, item):
+        return self.__traces.index(item)
 
     
