@@ -1,5 +1,5 @@
 from pathlib import Path
-from random import cho
+from random import choice
 
 # Cargar archivo tipo trace (del folder traces/)
 # Se carga en un lista con cada item de forma (dirección, historia)
