@@ -25,5 +25,9 @@ class ProgramCounter:
     def jmp(self):
         return  True if int(self.__current_pc[1]) else False
     
+    @property
+    def addr(self):
+        return self.__current_pc[0]
+    
     def __update_pc_index(self):
         self.__pc_index = self.__trace.index(self.__current_pc)
