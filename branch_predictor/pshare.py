@@ -1,3 +1,4 @@
+from math import log2
 class Pshare:
 
     def __init__(self, history_bits = 10, bht_size = 1024, pht_size = 1024, initial_state = 3):
@@ -6,6 +7,8 @@ class Pshare:
         self.__next_state = initial_state
 
         self.__pht_size = pht_size
+        self.__bht_size = bht_size
+
         self.__history_bits = history_bits
 
         self.__bht = [initial_state] * bht_size
@@ -43,7 +46,9 @@ class Pshare:
         self.__bht[self.__get_bht_addr(pc_addr)] = value
 
     def __get_bht_addr(self, pc_addr):
-        return self.__get_pht(pc_addr) ^ self.__address(pc_addr) # Calcula indice para la tabla BHT
+        mask = int("1"*int(log2(self.__bht_size)),2)
+        addr = (self.__get_pht(pc_addr) ^ self.__address(pc_addr)) & mask # Calcula indice para la tabla BHT
+        return addr
     
     def __address(self, pc_addr):
         # Asegurarse de que pc_addr es un entero antes de usarlo
