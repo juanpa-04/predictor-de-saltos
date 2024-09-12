@@ -2,6 +2,7 @@ from program_counter import ProgramCounter
 from pshare import Pshare
 from gshare import GSharePredictor
 from simple_predictor import SimpleSaturatingCounterPredictor
+from predictorDePredictores import MetaPredictor
 
 from tui import PredictorTUI
 trace = "trace_01"
@@ -15,6 +16,8 @@ def main_loop():
     predictor = check_until_valid(tui.select_predictor)
     if(predictor == 3):
         sizes = check_until_valid(tui.select_counter)
+    elif(predictor == 4):
+        sizes = check_until_valid(tui.select_meta)
     else: 
         sizes = check_until_valid(tui.select_sizes)
 
@@ -29,7 +32,7 @@ def main_loop():
         bht_table = tui.table_menu("BHT")
         if bht_table:
             display_bht(predictor.bht, bht_table)
-    if(not isinstance(predictor, SimpleSaturatingCounterPredictor)):
+    if(not isinstance(predictor, SimpleSaturatingCounterPredictor) and not isinstance(predictor, MetaPredictor)):
         btb_table = tui.table_menu("BTB")
         if btb_table:
             display_btb(predictor.btb, btb_table)
@@ -37,10 +40,10 @@ def main_loop():
         p_table = tui.table_menu("PHT")
         if p_table:
             display_pht(predictor.pht_table, p_table)
-    else:
+    elif isinstance(predictor, SimpleSaturatingCounterPredictor):
         counter = tui.table_menu("Estado del contador saturado")
         if counter:
-            print("TABLE")
+            display_counter(predictor.table,counter)
 
 def check_until_valid(func):
     item = False
@@ -54,6 +57,7 @@ def run_predictor(predictor, sizes, iter, pc):
         case 1: predictor = run_pshare(sizes, iter, pc)
         case 2: predictor = run_gshare(sizes, iter)
         case 3: predictor = run_simple_predictor(sizes, iter, pc)
+        case 4: predictor = run_meta_predictor(sizes, iter)
         case _: return False
     return predictor
 
@@ -98,7 +102,7 @@ def results(correct, iterations, pc):
 
     print("\n[Resultados]")
     print(f"Saltos: {jumps}")
-    print(f"Tasa: {accuracy} %")
+    print(f"Tasa: {accuracy:.2f} %")
     print(f"Errores: {errors}\n")
 
 def run_gshare(sizes, iter):
@@ -107,6 +111,12 @@ def run_gshare(sizes, iter):
     correct_predictions, pc = gshare.run()
     results(correct_predictions, iter, pc)
     return gshare
+
+def run_meta_predictor(sizes, iter):
+    mpredictor = MetaPredictor(trace_name=trace,meta_size=sizes, iter=iter)
+    correct_predictions, pc = mpredictor.run()
+    results(correct_predictions, iter, pc)
+    return mpredictor
 
 def display_bht(table, end):
     print("Branch History Table")
@@ -135,6 +145,11 @@ def display_btb(table,end):
     for i, (address, target) in enumerate(table.buffer.items()): 
         if i >= end: break
         print(f"{address} | {target}")
+    
+def display_counter(table,end):
+     print("Index | Value")
+     for i, value in enumerate(table[:end]):
+            print(f"{i} | {value}")
 
 if __name__ == "__main__":
     main_loop()

@@ -3,7 +3,7 @@ from pshare import Pshare
 
 
 class MetaPredictor:
-    def __init__(self, trace_name, history_bits=10, meta_size=1024):
+    def __init__(self, trace_name, history_bits=10, meta_size=1024, iter = 1000):
         # Inicializar los predictores GShare y PShare
         self.gshare = GSharePredictor(trace_name, history_bits)  
         self.pshare = Pshare(history_bits)  
@@ -12,6 +12,8 @@ class MetaPredictor:
         self.meta_predictor = [1] * meta_size  
         self.meta_size = meta_size              
         self.global_history = 0  # Historial global para seleccionar el predictor
+
+        self.iter = iter
 
     def _get_meta_index(self, pc_addr):
         if isinstance(pc_addr, str):    # Se pregunta si pc_addr es un string
@@ -69,7 +71,7 @@ class MetaPredictor:
                 self.meta_predictor[meta_index] -= 1
 
         # Imprimir el nuevo estado del meta-predictor
-        print(f"Updated Meta index: {meta_index}, New state: {self.meta_predictor[meta_index]}")  # Debugging
+        # print(f"Updated Meta index: {meta_index}, New state: {self.meta_predictor[meta_index]}")  # Debugging
 
         # Actualizar el historial global
         self.global_history = ((self.global_history << 1) | actual_outcome) & ((1 << 10) - 1)
@@ -94,12 +96,12 @@ class MetaPredictor:
             self.update(pc_addr, outcome, used_predictor, state)
 
             # Imprimir precisión cada 100 predicciones
-            if total_predictions % 100 == 0:
-                accuracy = correct_predictions / total_predictions * 100
-                print(f"Accuracy after {total_predictions} predictions: {accuracy:.2f}%")
+            # if total_predictions % 100 == 0:
+                # accuracy = correct_predictions / total_predictions * 100
+                # print(f"Accuracy after {total_predictions} predictions: {accuracy:.2f}%")
 
-            if total_predictions >= 1000:
-                break
+            if total_predictions >= self.iter:
+                return (correct_predictions, self.gshare.pc)
 
 # Ejecutar el meta-predictor
 if __name__ == "__main__":

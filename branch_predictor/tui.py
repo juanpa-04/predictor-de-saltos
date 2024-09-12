@@ -27,6 +27,7 @@ class PredictorTUI:
         menu.add_option("PShare")
         menu.add_option("GShare")
         menu.add_option("Saturating Counter Predictor")
+        menu.add_option("Meta Predictor")
         menu.display()
 
         result = self.__read_input(max = menu.opts)
@@ -74,6 +75,22 @@ class PredictorTUI:
             self.__error("Escoger algún item del menu")
             return False
 
+    def select_meta(self):
+        menu = Menu("Cambiar tamaño de MetaPredictor")
+        menu.add_option("Si")
+        menu.add_option("No")
+        menu.display()
+        result = self.__read_input(max = menu.opts)
+
+        if(result == 1):
+            tabla = self.__read_input(pre_msg="Ingresar tamaño de MetaPredictor")
+            tabla = 1024 if not tabla else tabla
+            return tabla
+        elif(result == 2):
+            return 1024
+        else:
+            self.__error("Escoger algún item del menu")
+            return False
 
     def select_iterations(self):
         i = self.__read_input(pre_msg="Escoger número de iteraciones (default 1000)")

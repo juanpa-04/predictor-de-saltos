@@ -96,7 +96,6 @@ class GSharePredictor:
 
             # Sal del bucle después de un número fijo de predicciones (valor por defecto: 1k predicciones)
             if total_predictions >= self.iter:  # Se puede ajustar este número de acuerdo a las necesidades del usuario
-                print(self.pc.counter)
                 return (correct_predictions, self.pc)
 
 # Ejecutar el predictor si este archivo se corre directamente
