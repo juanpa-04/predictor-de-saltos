@@ -14,13 +14,13 @@ class ProgramCounter:
 
     def next(self):
         if self.jmp:
-            self.__current_pc = next(self.__trace)
+            self.__current_pc = next(self.__trace)      # Si hubo jump, buscar otro trace
         else:
-            self.__current_pc = self.__trace[self.__pc_index + 1]
+            self.__current_pc = self.__trace[self.__pc_index + 1]       # Si no hubo jump, aumenta el pc en 1 ys igue recorriendo el archivo trace
         self.__update_pc_index()
         return self.__current_pc
     
-    @property
+    @property       # Verifica si hubo un jump
     def jmp(self):
         return True if int(self.__current_pc[1]) else False
     
