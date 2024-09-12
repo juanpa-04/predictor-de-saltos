@@ -29,19 +29,18 @@ def main_loop():
         bht_table = tui.table_menu("BHT")
         if bht_table:
             display_bht(predictor.bht, bht_table)
-    elif(not isinstance(predictor, SimpleSaturatingCounterPredictor)):
+    if(not isinstance(predictor, SimpleSaturatingCounterPredictor)):
         btb_table = tui.table_menu("BTB")
         if btb_table:
             display_btb(predictor.btb, btb_table)
+
+        p_table = tui.table_menu("PHT")
+        if p_table:
+            display_pht(predictor.pht_table, p_table)
     else:
         counter = tui.table_menu("Estado del contador saturado")
         if counter:
             print("TABLE")
-
-    if(not isinstance(predictor, SimpleSaturatingCounterPredictor)):
-        pht_table = tui.table_menu("PHT")
-        if pht_table:
-            display_pht(predictor.pht, pht_table)
 
 def check_until_valid(func):
     item = False
@@ -61,8 +60,9 @@ def run_predictor(predictor, sizes, iter, pc):
 def run_pshare(sizes, iter, pc):
     
     btb, pht = sizes
-    pshare = Pshare(bht_size=pht, pht_size=pht)
-    
+    pshare = Pshare(btb_size=btb, pht_size=pht)
+    pc_addr = pc.addr
+
     correct_predictions = 0
     for i in range(0, iter):
         outcome = pc.jmp
@@ -71,6 +71,7 @@ def run_pshare(sizes, iter, pc):
              correct_predictions += 1
         pshare.update(pc.addr, outcome)
         pc.next()
+        pshare.update_btb(pc_addr, pc.addr, outcome)
     
     results(correct_predictions, iter, pc)
     return pshare
@@ -133,7 +134,7 @@ def display_btb(table,end):
     print("Address | Target")
     for i, (address, target) in enumerate(table.buffer.items()): 
         if i >= end: break
-        print(f" {hex(address)} | {target}")
+        print(f"{address} | {target}")
 
 if __name__ == "__main__":
     main_loop()

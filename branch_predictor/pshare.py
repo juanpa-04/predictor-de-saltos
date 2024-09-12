@@ -1,11 +1,14 @@
 from math import log2
+from BTBPHT import BranchTargetBuffer
+
 class Pshare:
 
-    def __init__(self, history_bits = 10, bht_size = 1024, pht_size = 1024, initial_state = 3):
+    def __init__(self, history_bits = 10, btb_size = 1024, pht_size = 1024, initial_state = 3):
 
         self.__state = initial_state
         self.__next_state = initial_state
 
+        bht_size = pht_size
         self.__pht_size = pht_size
         self.__bht_size = bht_size
 
@@ -13,6 +16,7 @@ class Pshare:
 
         self.__bht = [initial_state] * bht_size
         self.__pht = [0] * pht_size
+        self.__btb = BranchTargetBuffer(btb_size)
 
         self.__ST = 0
         self.__SN = 1
@@ -23,12 +27,11 @@ class Pshare:
     def bht(self):
         return self.__bht
     @property
-    def pht(self):
+    def pht_table(self):
         return self.__pht
-
     @property
     def btb(self):
-        return self.__bht
+        return self.__btb
 
     def __get_pht(self, pc_addr):
         return self.__pht[self.__address(pc_addr)]
@@ -38,7 +41,6 @@ class Pshare:
         pht = self.__get_pht(pc_addr) << 1 | outcome
         self.__pht[self.__address(pc_addr)] = pht & mask
         
-
     def __get_bht(self, pc_addr):
         return self.__bht[self.__get_bht_addr(pc_addr)]
     
@@ -67,6 +69,10 @@ class Pshare:
        self.__FSM(outcome)
        self.__set_bht(pc_addr, self.__state) # Actualizar BHT segun la FSM
        self.__shift_pht(pc_addr,outcome) # Shift el nuevo outcome al PHT
+       
+    def update_btb(self, pc_addr, target,outcome):
+            if outcome:
+                self.__btb.update(pc_addr, target)
 
     def __FSM(self, taken):
         self.__next_state = self.__state

@@ -13,6 +13,10 @@ class GSharePredictor:
         self.btb = BranchTargetBuffer(btb_size)                        # Recibe como atributo el BTB desde BTBPHT.py
         self.iter = iter
 
+    @property
+    def pht_table(self):
+        return self.pht.table
+
     def _get_pht_index(self, pc_addr):                                 # Método para obtener el índice del PHT
 
         # Asegurarse de que pc_addr es un entero
