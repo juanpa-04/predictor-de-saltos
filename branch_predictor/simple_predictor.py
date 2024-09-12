@@ -72,4 +72,4 @@ def test_saturating_counter_predictor(trace_file):
 
 
 # Ejecutar la prueba (puedes reemplazar `home/gabriel/E/trace_01` con los archivos trace para probar, yo solo probe con uno, por que tal vez más y me explota la pc)
-test_saturating_counter_predictor("/home/gabriel/E/trace_01")
+#test_saturating_counter_predictor("/home/gabriel/E/trace_01")

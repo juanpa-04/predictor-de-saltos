@@ -26,6 +26,7 @@ class PredictorTUI:
         menu = Menu("Escoger Predictor")
         menu.add_option("PShare")
         menu.add_option("GShare")
+        menu.add_option("Saturating Counter Predictor")
         menu.display()
 
         result = self.__read_input(max = menu.opts)
@@ -56,8 +57,26 @@ class PredictorTUI:
             self.__error("Escoger algún item del menu")
             return False
     
+    def select_counter(self):
+        menu = Menu("Cambiar tamaño de tabla de contador")
+        menu.add_option("Si")
+        menu.add_option("No")
+        menu.display()
+        result = self.__read_input(max = menu.opts)
+
+        if(result == 1):
+            tabla = self.__read_input(pre_msg="Ingresar tamaño de tabla (1024)")
+            tabla = 1024 if not tabla else tabla
+            return tabla
+        elif(result == 2):
+            return 1024
+        else:
+            self.__error("Escoger algún item del menu")
+            return False
+
+
     def select_iterations(self):
-        i = self.__read_input(pre_msg="Escoger numero de iteraciones (default 1000)")
+        i = self.__read_input(pre_msg="Escoger número de iteraciones (default 1000)")
         i = 1000 if not i else i
         return i
 

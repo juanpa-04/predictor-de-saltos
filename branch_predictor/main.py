@@ -1,8 +1,9 @@
 from program_counter import ProgramCounter
 from pshare import Pshare
 from gshare import GSharePredictor
-from tui import PredictorTUI
+from simple_predictor import SimpleSaturatingCounterPredictor
 
+from tui import PredictorTUI
 trace = "trace_01"
 
 def main_loop():
@@ -12,7 +13,11 @@ def main_loop():
     trace = check_until_valid(tui.choose_trace)
 
     predictor = check_until_valid(tui.select_predictor)
-    sizes = check_until_valid(tui.select_sizes)
+    if(predictor == 3):
+        sizes = check_until_valid(tui.select_counter)
+    else: 
+        sizes = check_until_valid(tui.select_sizes)
+
     iter = check_until_valid(tui.select_iterations)
 
     print(f"Simulando con {trace}")
@@ -24,14 +29,19 @@ def main_loop():
         bht_table = tui.table_menu("BHT")
         if bht_table:
             display_bht(predictor.bht, bht_table)
-    else:
+    elif(not isinstance(predictor, SimpleSaturatingCounterPredictor)):
         btb_table = tui.table_menu("BTB")
         if btb_table:
             display_btb(predictor.btb, btb_table)
-        
-    pht_table = tui.table_menu("PHT")
-    if pht_table:
-        display_pht(predictor.pht, pht_table)
+    else:
+        counter = tui.table_menu("Estado del contador saturado")
+        if counter:
+            print("TABLE")
+
+    if(not isinstance(predictor, SimpleSaturatingCounterPredictor)):
+        pht_table = tui.table_menu("PHT")
+        if pht_table:
+            display_pht(predictor.pht, pht_table)
 
 def check_until_valid(func):
     item = False
@@ -44,6 +54,7 @@ def run_predictor(predictor, sizes, iter, pc):
     match predictor:
         case 1: predictor = run_pshare(sizes, iter, pc)
         case 2: predictor = run_gshare(sizes, iter)
+        case 3: predictor = run_simple_predictor(sizes, iter, pc)
         case _: return False
     return predictor
 
@@ -63,6 +74,21 @@ def run_pshare(sizes, iter, pc):
     
     results(correct_predictions, iter, pc)
     return pshare
+
+def run_simple_predictor(size, iter, pc):
+    simple = SimpleSaturatingCounterPredictor(size)
+    
+    correct_predictions = 0
+    for i in range(0, iter):
+        outcome = pc.jmp
+        prediction = simple.predict(int(pc.addr,16))
+        if prediction == outcome:
+             correct_predictions += 1
+        simple.update(int(pc.addr,16), int(outcome))
+        pc.next()
+    
+    results(correct_predictions, iter, pc)
+    return simple
 
 def results(correct, iterations, pc):
     accuracy = (correct / iterations) * 100
