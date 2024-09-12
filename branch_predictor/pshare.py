@@ -15,6 +15,17 @@ class Pshare:
         self.__SN = 1
         self.__WT = 2
         self.__WN = 3
+    
+    @property
+    def bht(self):
+        return self.__bht
+    @property
+    def pht(self):
+        return self.__pht
+
+    @property
+    def btb(self):
+        return self.__bht
 
     def __get_pht(self, pc_addr):
         return self.__pht[self.__address(pc_addr)]

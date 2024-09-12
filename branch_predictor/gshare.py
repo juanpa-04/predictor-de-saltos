@@ -5,12 +5,13 @@ from BTBPHT import BranchTargetBuffer, PatternHistoryTable           # Para mane
 # Clase encargada del predictor de saltos tipo 'gshare', se eligen 8 bits de historia, como en el ejemplo visto en clase
 
 class GSharePredictor:
-    def __init__(self, trace_name, history_bits=8, btb_size=1024, pht_size=1024):
+    def __init__(self, trace_name, history_bits=8, btb_size=1024, pht_size=1024, iter = 1000):
         self.pc = ProgramCounter(trace_name)                           # Inicializa PC desde la clase implementada en program_counter.py
         self.global_history = 0                                    # Inicializa un arreglo para la información global de los saltos
         self.history_bits = history_bits                               # Instancia el tamaño del historial global, se recibe como parámetro pero su valor por defecto es 8
         self.pht = PatternHistoryTable(pht_size)                   # Recibe como atributo el PHT desde BTBPHT.py
         self.btb = BranchTargetBuffer(btb_size)                        # Recibe como atributo el BTB desde BTBPHT.py
+        self.iter = iter
 
     def _get_pht_index(self, pc_addr):                                 # Método para obtener el índice del PHT
 
@@ -52,14 +53,15 @@ class GSharePredictor:
             # Se usa una máscara OR para ignresar el valor del último salto, 1 si fue tomado, 0 si no
 
             # Si el salto fue tomado, se debe actualizar el BTB
+            # Obtener la dirección destino/objetivo para el salto 
+            target = self.pc.next()[0]
             if correct_outcome:
-                target = self.pc.next()[0]  # Obtener la dirección destino/objetivo para el salto 
                 self.btb.update(pc_addr, target)
 
     def run(self):
         correct_predictions = 0             # Contador de predicciones correctas
         total_predictions = 0               # Contador del total de predicciones realizadas
-
+        
         # Bucle principal para ejecutar las predicciones
         while True:
             
@@ -83,14 +85,15 @@ class GSharePredictor:
             self.update(correct_outcome, pc_addr, pht_index)
 
             # Imprime la precisión cada 100 predicciones
-            if total_predictions % 100 == 0:
-                accuracy = correct_predictions / total_predictions * 100
-                print(f"Accuracy after {total_predictions} predictions: {accuracy:.2f}%")
+            # if total_predictions % 100 == 0:
+                # accuracy = correct_predictions / total_predictions * 100
+                #
+                # print(f"Accuracy after {total_predictions} predictions: {accuracy:.2f}%")
 
             # Sal del bucle después de un número fijo de predicciones (valor por defecto: 1k predicciones)
-            if total_predictions >= 1000:  # Se puede ajustar este número de acuerdo a las necesidades del usuario
-                break
-
+            if total_predictions >= self.iter:  # Se puede ajustar este número de acuerdo a las necesidades del usuario
+                print(self.pc.counter)
+                return (correct_predictions, self.pc)
 
 # Ejecutar el predictor si este archivo se corre directamente
 if __name__ == "__main__":

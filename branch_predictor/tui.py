@@ -78,6 +78,20 @@ class PredictorTUI:
             return user_input
         else:
             return False
+    
+    def table_menu(self, name):
+        menu = Menu(f"Mostrar {name}")
+        menu.add_option("Si")
+        menu.add_option("No")
+        menu.display()
+
+        result = self.__read_input(max = menu.opts)
+        if(result == 1):
+            filas = self.__read_input(pre_msg="Ingresar número de filas")
+            return filas
+        elif(result == 2):
+            return False
+
         
 if __name__ == "__main__":
     tui = PredictorTUI()
