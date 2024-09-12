@@ -20,10 +20,15 @@ def main_loop():
 
     predictor = run_predictor(predictor, sizes, iter, pc)
 
-    btb_table = tui.table_menu("BHT")
-    if btb_table:
-        display_bht(predictor.btb, btb_table)
-    
+    if(isinstance(predictor, Pshare)):
+        bht_table = tui.table_menu("BHT")
+        if bht_table:
+            display_bht(predictor.bht, bht_table)
+    else:
+        btb_table = tui.table_menu("BTB")
+        if btb_table:
+            display_btb(predictor.btb, btb_table)
+        
     pht_table = tui.table_menu("PHT")
     if pht_table:
         display_pht(predictor.pht, pht_table)
@@ -44,8 +49,8 @@ def run_predictor(predictor, sizes, iter, pc):
 
 def run_pshare(sizes, iter, pc):
     
-    bht, pht = sizes
-    pshare = Pshare(bht_size=bht, pht_size=pht)
+    btb, pht = sizes
+    pshare = Pshare(bht_size=pht, pht_size=pht)
     
     correct_predictions = 0
     for i in range(0, iter):
@@ -80,7 +85,7 @@ def display_bht(table, end):
     print("Branch History Table")
 
     table = table[:end]
-    print("Dir | State")
+    print("Address | State")
     for idx, row in enumerate(table):
         match row:
             case 0: row = "ST"
@@ -88,14 +93,21 @@ def display_bht(table, end):
             case 2: row = "WT"
             case 3: row = "WN"
             case _: break
-        print(f"{hex(idx)} | {row}")
+        print(f"0x{idx:06x} | {row}")
 
 def display_pht(table,end):
     print("Pattern History Table")
     table = table[:end]
-    print("Dir | BHR")
+    print("Address | BHR")
     for idx, row in enumerate(table):
-        print(f"{hex(idx)} | {bin(row)}")
+        print(f"0x{idx:06x} | 0b{row:010b}")
+
+def display_btb(table,end):
+    print("Branch Target Buffer")
+    print("Address | Target")
+    for i, (address, target) in enumerate(table.buffer.items()): 
+        if i >= end: break
+        print(f" {hex(address)} | {target}")
 
 if __name__ == "__main__":
     main_loop()

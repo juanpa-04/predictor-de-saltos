@@ -36,20 +36,20 @@ class PredictorTUI:
             return False
     
     def select_sizes(self):
-        menu = Menu("Cambiar tamaños de BHT (default 1024) y PHT (default 1024)")
+        menu = Menu("Cambiar tamaños de BTB (default 1024) y PHT (default 1024)")
         menu.add_option("Si")
         menu.add_option("No")
         menu.display()
         
         result = self.__read_input(max = menu.opts)
         if(result == 1):
-            bht = self.__read_input(pre_msg="Ingresar BHT")
+            btb = self.__read_input(pre_msg="Ingresar BTB")
             pht = self.__read_input(pre_msg="Ingresar PHT")
 
-            bht = 1024 if not bht else bht
+            btb = 1024 if not btb else btb
             pht = 1024 if not pht else pht
 
-            return (bht, pht)
+            return (btb, pht)
         elif(result == 2):
             return (1024, 1024)
         else:
