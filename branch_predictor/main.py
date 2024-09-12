@@ -6,14 +6,17 @@ from tui import PredictorTUI
 trace = "trace_01"
 
 def main_loop():
+
+
     tui = PredictorTUI()
+    trace = check_until_valid(tui.choose_trace)
+
     predictor = check_until_valid(tui.select_predictor)
     sizes = check_until_valid(tui.select_sizes)
     iter = check_until_valid(tui.select_iterations)
 
-    print("Simulando...")
+    print(f"Simulando con {trace}")
     pc = ProgramCounter(trace)
-
 
     predictor = run_predictor(predictor, sizes, iter, pc)
 

@@ -1,3 +1,6 @@
+from os import listdir
+from pathlib import Path
+
 class Menu:
     def __init__(self, header):
         self.__options = [header]
@@ -14,7 +17,6 @@ class Menu:
     @property
     def opts(self):
         return len(self.__options) - 1
-
 
 class PredictorTUI:
     def __init__(self):
@@ -90,6 +92,21 @@ class PredictorTUI:
             filas = self.__read_input(pre_msg="Ingresar número de filas")
             return filas
         elif(result == 2):
+            return False
+    
+    def choose_trace(self):
+        menu = Menu(f"Elegir Trace")
+        trace_path = Path(__file__).parent.parent / "traces"
+        files = listdir(trace_path)
+        files.sort()
+        for trace in files:
+            menu.add_option(trace)
+        menu.display()
+        result = self.__read_input(max = menu.opts)
+        if result:
+            return files[result - 1]
+        else:
+            self.__error("Escoger algún item del menu")
             return False
 
         
