@@ -76,6 +76,7 @@ def run_pshare(sizes, iter, pc):
         pshare.update(pc.addr, outcome)
         pc.next()
         pshare.update_btb(pc_addr, pc.addr, outcome)
+        pc_addr = pc.addr
     
     results(correct_predictions, iter, pc)
     return pshare
