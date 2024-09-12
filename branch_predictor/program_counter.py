@@ -8,7 +8,6 @@ class ProgramCounter:
         self.__trace = Trace(trace_name)
         self.__current_pc = self.__trace[initial_pc]
         self.__pc_index = self.__trace.index(self.__current_pc)
-        self.__jmp = self.jmp
 
     def __str__(self):
         return f"{self.__current_pc[0]}"
@@ -23,7 +22,7 @@ class ProgramCounter:
     
     @property
     def jmp(self):
-        return  True if int(self.__current_pc[1]) else False
+        return True if int(self.__current_pc[1]) else False
     
     @property
     def addr(self):
