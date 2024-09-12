@@ -35,7 +35,11 @@ class Pshare:
         return self.__get_pht(pc_addr) ^ self.__address(pc_addr) # Calcula indice para la tabla BHT
     
     def __address(self, pc_addr):
-        return int(pc_addr,0) % self.__pht_size # Elige los bits LSB para indexar PHT (si es 1024 elige 10bits)
+        # Asegurarse de que pc_addr es un entero antes de usarlo
+        if isinstance(pc_addr, str):
+            pc_addr = int(pc_addr, 16)  # Convertir de hexadecimal a entero si es una cadena
+
+        return pc_addr % self.__pht_size # Elige los bits LSB para indexar PHT (si es 1024 elige 10bits)
 
     def predict(self, pc_addr):
         prediction = self.__get_bht(pc_addr)
